@@ -69,8 +69,8 @@ public partial class CheckoutViewModel : ViewModelBase
                 // Create new Order
                 Order = new Order
                 {
-                    //TODO: Get a better order number generator
-                    OrderNumber = (int)DateTimeOffset.Now.TimeOfDay.TotalMilliseconds,
+                 // Generate order number using timestamp and random component for uniqueness
+                OrderNumber = GenerateOrderNumber(),
                     UserId = userInfo.UserId,
                     UserName = userInfo.PreferredUsername,
                     OrderItems = orderItems,
@@ -167,4 +167,12 @@ public partial class CheckoutViewModel : ViewModelBase
 
         return total;
     }
+    private static int GenerateOrderNumber()
+{
+        // Combine date components and random number for uniqueness
+          var now = DateTimeOffset.UtcNow;
+             var dateComponent = (now.Year % 100) * 1000000 + now.Month * 10000 + now.Day * 100;
+             var randomComponent = Random.Shared.Next(0, 99);
+    return dateComponent + randomComponent;
+}
 }

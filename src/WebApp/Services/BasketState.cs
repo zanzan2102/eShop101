@@ -135,7 +135,7 @@ public class BasketState(
                 var catalogItem = catalogItems[item.ProductId];
                 var orderItem = new BasketItem
                 {
-                    Id = Guid.NewGuid().ToString(), // TODO: this value is meaningless, use ProductId instead.
+                    Id = catalogItem.Id.ToString(), // Use ProductId as the identifier
                     ProductId = catalogItem.Id,
                     ProductName = catalogItem.Name,
                     UnitPrice = catalogItem.Price,
