@@ -1,0 +1,145 @@
+@model RegisterViewModel
+
+<div class="login-page">
+    <div class="container">
+        <div class="row top-buffer">
+            <div class="col"></div>
+            <div class="col-sm-8">
+                <form asp-route="Register">
+                    <input type="hidden" asp-for="ReturnUrl" />
+                    <div class="register-container">
+                        <h2>Register</h2>
+                        <partial name="_ValidationSummary" />
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="Email"></label>
+                                    <input class="form-control" placeholder="Email" asp-for="Email" autofocus>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="Name"></label>
+                                    <input class="form-control" placeholder="First Name" asp-for="Name">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="Password"></label>
+                                    <input type="password" class="form-control" placeholder="Password" asp-for="Password" autocomplete="off">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="LastName"></label>
+                                    <input class="form-control" placeholder="Last Name" asp-for="LastName">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="ConfirmPassword"></label>
+                            <input type="password" class="form-control" placeholder="Confirm Password" asp-for="ConfirmPassword" autocomplete="off">
+                        </div>
+
+                        <hr />
+                        <h4>Address Information</h4>
+                        
+                        <div class="form-group">
+                            <label asp-for="Street"></label>
+                            <input class="form-control" placeholder="Street" asp-for="Street">
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="City"></label>
+                                    <input class="form-control" placeholder="City" asp-for="City">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="State"></label>
+                                    <input class="form-control" placeholder="State" asp-for="State">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="Country"></label>
+                                    <input class="form-control" placeholder="Country" asp-for="Country">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="ZipCode"></label>
+                                    <input class="form-control" placeholder="Zip Code" asp-for="ZipCode">
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr />
+                        <h4>Payment Information</h4>
+
+                        <div class="form-group">
+                            <label asp-for="CardHolderName"></label>
+                            <input class="form-control" placeholder="Card Holder Name" asp-for="CardHolderName">
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="CardNumber"></label>
+                                    <input class="form-control" placeholder="Card Number" asp-for="CardNumber">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="SecurityNumber"></label>
+                                    <input class="form-control" placeholder="Security Number" asp-for="SecurityNumber">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="Expiration"></label>
+                                    <input class="form-control" placeholder="MM/YY" asp-for="Expiration">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="CardType"></label>
+                                    <select class="form-control" asp-for="CardType">
+                                        <option value="1">Visa</option>
+                                        <option value="2">MasterCard</option>
+                                        <option value="3">American Express</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <button class="btn btn-primary" name="button" value="register">Register</button>
+                            <button class="btn btn-secondary" name="button" value="cancel">Cancel</button>
+                        </div>
+
+                        <div class="form-group">
+                            <a asp-action="Login" asp-route-returnUrl="@Model.ReturnUrl">Already have an account? Login here</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col"></div>
+        </div>
+    </div>
+</div>
+
+
