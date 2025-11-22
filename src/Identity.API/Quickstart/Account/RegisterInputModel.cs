@@ -22,39 +22,31 @@ public class RegisterInputModel
     [Display(Name = "First Name")]
     public string Name { get; set; }
 
-    [Required]
+    // Các trường sau không bắt buộc vì không hiển thị trong form đăng ký
     [Display(Name = "Last Name")]
     public string LastName { get; set; } = string.Empty;
 
-    [Required]
     [Display(Name = "Street")]
     public string Street { get; set; } = string.Empty;
 
-    [Required]
     [Display(Name = "City")]
     public string City { get; set; } = string.Empty;
 
-    [Required]
     [Display(Name = "State")]
     public string State { get; set; } = string.Empty;
 
-    [Required]
     [Display(Name = "Country")]
     public string Country { get; set; } = string.Empty;
 
-    [Required]
     [Display(Name = "Zip Code")]
     public string ZipCode { get; set; } = string.Empty;
 
-    [Required]
     [Display(Name = "Card Holder Name")]
     public string CardHolderName { get; set; } = string.Empty;
 
-    [Required]
     [Display(Name = "Card Number")]
     public string CardNumber { get; set; } = string.Empty;
 
-    [Required]
     [Display(Name = "Security Number")]
     public string SecurityNumber { get; set; } = string.Empty;
 

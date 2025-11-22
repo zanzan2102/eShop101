@@ -233,18 +233,7 @@ public async Task<IActionResult> Register(RegisterInputModel model, string butto
             UserName = model.Email,
             Email = model.Email,
             EmailConfirmed = true,
-            Name = model.Name ?? string.Empty,
-            LastName = model.LastName ?? string.Empty,
-            Street = model.Street ?? string.Empty,
-            City = model.City ?? string.Empty,
-            State = model.State ?? string.Empty,
-            Country = model.Country ?? string.Empty,
-            ZipCode = model.ZipCode ?? string.Empty,
-            CardHolderName = model.CardHolderName ?? string.Empty,
-            CardNumber = model.CardNumber ?? string.Empty,
-            SecurityNumber = model.SecurityNumber ?? string.Empty,
-            Expiration = model.Expiration ?? string.Empty,
-            CardType = model.CardType
+            Name = model.Name ?? string.Empty
         };
 
         var result = await _userManager.CreateAsync(user, model.Password);

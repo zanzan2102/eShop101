@@ -220,19 +220,8 @@ CREATE TABLE IF NOT EXISTS "AspNetUsers" (
     "AccessFailedCount" INTEGER NOT NULL DEFAULT 0,
     -- Thông tin bổ sung từ ApplicationUser
     -- Lưu ý: Form đăng ký chỉ yêu cầu Email, Name, Password
-    -- Các trường khác có thể NULL (người dùng cập nhật sau)
-    "CardNumber" TEXT,
-    "SecurityNumber" TEXT,
-    "Expiration" TEXT,
-    "CardHolderName" TEXT,
-    "CardType" INTEGER DEFAULT 1,
-    "Street" TEXT,
-    "City" TEXT,
-    "State" TEXT,
-    "Country" TEXT,
-    "ZipCode" TEXT,
-    "Name" TEXT,
-    "LastName" TEXT
+    -- Chỉ giữ lại Name vì có trong form đăng ký
+    "Name" TEXT
 );
 
 CREATE INDEX IF NOT EXISTS "EmailIndex" ON "AspNetUsers" ("NormalizedEmail");
