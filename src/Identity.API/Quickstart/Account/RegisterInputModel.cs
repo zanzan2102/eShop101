@@ -24,44 +24,43 @@ public class RegisterInputModel
 
     [Required]
     [Display(Name = "Last Name")]
-    public string LastName { get; set; }
+    public string LastName { get; set; } = string.Empty;
 
     [Required]
     [Display(Name = "Street")]
-    public string Street { get; set; }
+    public string Street { get; set; } = string.Empty;
 
     [Required]
     [Display(Name = "City")]
-    public string City { get; set; }
+    public string City { get; set; } = string.Empty;
 
     [Required]
     [Display(Name = "State")]
-    public string State { get; set; }
+    public string State { get; set; } = string.Empty;
 
     [Required]
     [Display(Name = "Country")]
-    public string Country { get; set; }
+    public string Country { get; set; } = string.Empty;
 
     [Required]
     [Display(Name = "Zip Code")]
-    public string ZipCode { get; set; }
+    public string ZipCode { get; set; } = string.Empty;
 
     [Required]
     [Display(Name = "Card Holder Name")]
-    public string CardHolderName { get; set; }
+    public string CardHolderName { get; set; } = string.Empty;
 
     [Required]
     [Display(Name = "Card Number")]
-    public string CardNumber { get; set; }
+    public string CardNumber { get; set; } = string.Empty;
 
     [Required]
     [Display(Name = "Security Number")]
-    public string SecurityNumber { get; set; }
+    public string SecurityNumber { get; set; } = string.Empty;
 
-    [Required]
     [RegularExpression(@"(0[1-9]|1[0-2])\/[0-9]{2}", ErrorMessage = "Expiration should match a valid MM/YY value")]
     [Display(Name = "Expiration (MM/YY)")]
-    public string Expiration { get; set; }
+    public string Expiration { get; set; } = string.Empty;
 
     [Display(Name = "Card Type")]
     public int CardType { get; set; } = 1;
