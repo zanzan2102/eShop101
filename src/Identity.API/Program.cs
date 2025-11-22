@@ -1,4 +1,6 @@
-﻿var builder = WebApplication.CreateBuilder(args);
+﻿using System.Security.Cryptography.X509Certificates;
+
+var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 
@@ -50,7 +52,9 @@ else
     if (!string.IsNullOrEmpty(certificatePath) && File.Exists(certificatePath))
     {
         // Load certificate from file
+#pragma warning disable SYSLIB0057 // Type or member is obsolete
         var certificate = new X509Certificate2(certificatePath, certificatePassword);
+#pragma warning restore SYSLIB0057
         identityServerBuilder.AddSigningCredential(certificate);
     }
     else
@@ -62,7 +66,9 @@ else
         if (!string.IsNullOrEmpty(certBase64))
         {
             var certBytes = Convert.FromBase64String(certBase64);
+#pragma warning disable SYSLIB0057 // Type or member is obsolete
             var certificate = new X509Certificate2(certBytes, certPassword);
+#pragma warning restore SYSLIB0057
             identityServerBuilder.AddSigningCredential(certificate);
         }
         else

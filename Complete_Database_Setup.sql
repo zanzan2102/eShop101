@@ -1,7 +1,19 @@
 -- =============================================
--- SQL Script để tạo các bảng cho eShop Ordering System
--- Database: PostgreSQL
--- Schema: ordering
+-- SQL Script để tạo các bảng cho eShop System
+-- Database: PostgreSQL (Neon.tech)
+-- =============================================
+-- 
+-- HƯỚNG DẪN SỬ DỤNG:
+-- 1. Chạy từng phần trong database tương ứng:
+--    - PART 1: orderingdb
+--    - PART 2: identitydb  
+--    - PART 3: catalogdb
+--    - PART 4: webhooksdb
+-- 2. Hoặc chạy toàn bộ script nếu có quyền tạo nhiều databases
+-- =============================================
+
+-- =============================================
+-- PART 1: ORDERING DATABASE (orderingdb)
 -- =============================================
 
 -- Tạo schema nếu chưa tồn tại
@@ -170,7 +182,7 @@ VALUES (3, 'American Express')
 ON CONFLICT ("Id") DO NOTHING;
 
 -- =============================================
--- PHẦN 2: CÁC BẢNG IDENTITY (ĐĂNG KÝ/ĐĂNG NHẬP)
+-- PART 2: IDENTITY DATABASE (identitydb)
 -- =============================================
 
 -- =============================================
@@ -207,18 +219,20 @@ CREATE TABLE IF NOT EXISTS "AspNetUsers" (
     "LockoutEnabled" BOOLEAN NOT NULL DEFAULT FALSE,
     "AccessFailedCount" INTEGER NOT NULL DEFAULT 0,
     -- Thông tin bổ sung từ ApplicationUser
-    "CardNumber" TEXT NOT NULL,
-    "SecurityNumber" TEXT NOT NULL,
-    "Expiration" TEXT NOT NULL,
-    "CardHolderName" TEXT NOT NULL,
-    "CardType" INTEGER NOT NULL,
-    "Street" TEXT NOT NULL,
-    "City" TEXT NOT NULL,
-    "State" TEXT NOT NULL,
-    "Country" TEXT NOT NULL,
-    "ZipCode" TEXT NOT NULL,
-    "Name" TEXT NOT NULL,
-    "LastName" TEXT NOT NULL
+    -- Lưu ý: Form đăng ký chỉ yêu cầu Email, Name, Password
+    -- Các trường khác có thể NULL (người dùng cập nhật sau)
+    "CardNumber" TEXT,
+    "SecurityNumber" TEXT,
+    "Expiration" TEXT,
+    "CardHolderName" TEXT,
+    "CardType" INTEGER DEFAULT 1,
+    "Street" TEXT,
+    "City" TEXT,
+    "State" TEXT,
+    "Country" TEXT,
+    "ZipCode" TEXT,
+    "Name" TEXT,
+    "LastName" TEXT
 );
 
 CREATE INDEX IF NOT EXISTS "EmailIndex" ON "AspNetUsers" ("NormalizedEmail");
@@ -297,13 +311,101 @@ CREATE TABLE IF NOT EXISTS "AspNetUserTokens" (
 );
 
 -- =============================================
+-- PART 3: CATALOG DATABASE (catalogdb)
+-- =============================================
+
+-- Tạo extension vector cho AI search (Neon.tech hỗ trợ)
+CREATE EXTENSION IF NOT EXISTS vector;
+
+-- =============================================
+-- 17. Bảng CatalogBrand (Thương hiệu sản phẩm)
+-- =============================================
+CREATE TABLE IF NOT EXISTS "CatalogBrand" (
+    "Id" SERIAL PRIMARY KEY,
+    "Brand" VARCHAR(200) NOT NULL
+);
+
+-- =============================================
+-- 18. Bảng CatalogType (Loại sản phẩm)
+-- =============================================
+CREATE TABLE IF NOT EXISTS "CatalogType" (
+    "Id" SERIAL PRIMARY KEY,
+    "Type" VARCHAR(200) NOT NULL
+);
+
+-- =============================================
+-- 19. Bảng Catalog (Sản phẩm)
+-- =============================================
+CREATE TABLE IF NOT EXISTS "Catalog" (
+    "Id" SERIAL PRIMARY KEY,
+    "Name" VARCHAR(50) NOT NULL,
+    "Description" TEXT,
+    "Price" DECIMAL(18,2) NOT NULL,
+    "PictureFileName" TEXT,
+    "CatalogTypeId" INTEGER NOT NULL,
+    "CatalogBrandId" INTEGER NOT NULL,
+    "AvailableStock" INTEGER NOT NULL DEFAULT 0,
+    "RestockThreshold" INTEGER NOT NULL DEFAULT 0,
+    "MaxStockThreshold" INTEGER NOT NULL DEFAULT 0,
+    "OnReorder" BOOLEAN NOT NULL DEFAULT FALSE,
+    "Embedding" vector(384),
+    CONSTRAINT "FK_Catalog_CatalogBrand_CatalogBrandId" FOREIGN KEY ("CatalogBrandId") 
+        REFERENCES "CatalogBrand" ("Id") ON DELETE CASCADE,
+    CONSTRAINT "FK_Catalog_CatalogType_CatalogTypeId" FOREIGN KEY ("CatalogTypeId") 
+        REFERENCES "CatalogType" ("Id") ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS "IX_Catalog_CatalogBrandId" ON "Catalog" ("CatalogBrandId");
+CREATE INDEX IF NOT EXISTS "IX_Catalog_CatalogTypeId" ON "Catalog" ("CatalogTypeId");
+CREATE INDEX IF NOT EXISTS "IX_Catalog_Name" ON "Catalog" ("Name");
+
+-- =============================================
+-- 20. Bảng IntegrationEventLog cho Catalog
+-- =============================================
+CREATE TABLE IF NOT EXISTS "IntegrationEventLog" (
+    "EventId" UUID NOT NULL PRIMARY KEY,
+    "EventTypeName" TEXT NOT NULL,
+    "State" INTEGER NOT NULL,
+    "TimesSent" INTEGER NOT NULL,
+    "CreationTime" TIMESTAMP NOT NULL,
+    "Content" TEXT NOT NULL,
+    "TransactionId" UUID NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS "IX_IntegrationEventLog_State" ON "IntegrationEventLog" ("State");
+
+-- =============================================
+-- PART 4: WEBHOOKS DATABASE (webhooksdb)
+-- =============================================
+
+-- =============================================
+-- 21. Bảng Subscriptions (Webhook subscriptions)
+-- =============================================
+CREATE TABLE IF NOT EXISTS "Subscriptions" (
+    "Id" SERIAL PRIMARY KEY,
+    "Type" INTEGER NOT NULL,
+    "Date" TIMESTAMP NOT NULL,
+    "DestUrl" TEXT NOT NULL,
+    "Token" TEXT,
+    "UserId" TEXT NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS "IX_Subscriptions_UserId" ON "Subscriptions" ("UserId");
+CREATE INDEX IF NOT EXISTS "IX_Subscriptions_Type" ON "Subscriptions" ("Type");
+
+-- =============================================
 -- HOÀN TẤT
 -- =============================================
 DO $$
 BEGIN
-    RAISE NOTICE 'Tất cả các bảng đã được tạo thành công!';
     RAISE NOTICE '=========================================';
     RAISE NOTICE 'HOÀN TẤT: Tất cả các bảng đã được tạo!';
+    RAISE NOTICE '=========================================';
+    RAISE NOTICE 'Lưu ý: Chạy từng PART trong database tương ứng:';
+    RAISE NOTICE '  - PART 1: orderingdb';
+    RAISE NOTICE '  - PART 2: identitydb';
+    RAISE NOTICE '  - PART 3: catalogdb';
+    RAISE NOTICE '  - PART 4: webhooksdb';
     RAISE NOTICE '=========================================';
 END $$;
 
