@@ -264,17 +264,8 @@ public async Task<IActionResult> Register(RegisterInputModel model, string butto
     {
         Email = model.Email,
         Name = model.Name,
-        LastName = model.LastName,
-        Street = model.Street,
-        City = model.City,
-        State = model.State,
-        Country = model.Country,
-        ZipCode = model.ZipCode,
-        CardHolderName = model.CardHolderName,
-        CardNumber = model.CardNumber,
-        SecurityNumber = model.SecurityNumber,
-        Expiration = model.Expiration,
-        CardType = model.CardType,
+        Password = model.Password,
+        ConfirmPassword = model.ConfirmPassword,
         ReturnUrl = model.ReturnUrl
     };
 
