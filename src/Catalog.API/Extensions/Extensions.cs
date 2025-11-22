@@ -20,8 +20,17 @@ public static class Extensions
             });
         });
 
-        // Seeding disabled - using data from neon.tech instead of mock data
-        builder.Services.AddMigration<CatalogContext>();
+        // Enable seeding if UseCustomizationData is true in configuration
+        // Set CatalogOptions:UseCustomizationData to true to enable seeding
+        var useCustomizationData = builder.Configuration.GetValue<bool>("CatalogOptions:UseCustomizationData", false);
+        if (useCustomizationData)
+        {
+            builder.Services.AddMigration<CatalogContext, CatalogContextSeed>();
+        }
+        else
+        {
+            builder.Services.AddMigration<CatalogContext>();
+        }
 
         // Add the integration services that consume the DbContext
         builder.Services.AddTransient<IIntegrationEventLogService, IntegrationEventLogService<CatalogContext>>();

@@ -74,12 +74,13 @@ public static class Extensions
             options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             options.Authority = identityUrl;
             options.SignedOutRedirectUri = callBackUrl;
-            options.ClientId = "webapp";
-            options.ClientSecret = "secret";
+            options.ClientId = configuration.GetValue<string>("Identity:ClientId") ?? "webapp";
+            options.ClientSecret = configuration.GetValue<string>("Identity:ClientSecret") ?? "secret";
             options.ResponseType = "code";
             options.SaveTokens = true;
             options.GetClaimsFromUserInfoEndpoint = true;
-            options.RequireHttpsMetadata = false;
+            // Only disable HTTPS metadata validation in Development
+            options.RequireHttpsMetadata = !builder.Environment.IsDevelopment();
             options.Scope.Add("openid");
             options.Scope.Add("profile");
             options.Scope.Add("orders");

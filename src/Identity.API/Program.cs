@@ -9,13 +9,13 @@ builder.AddNpgsqlDbContext<ApplicationDbContext>("identitydb");
 // Apply database migration automatically. Note that this approach is not
 // recommended for production scenarios. Consider generating SQL scripts from
 // migrations instead.
-builder.Services.AddMigration<ApplicationDbContext>();
+builder.Services.AddMigration<ApplicationDbContext, UsersSeed>();
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
         .AddEntityFrameworkStores<ApplicationDbContext>()
         .AddDefaultTokenProviders();
 
-builder.Services.AddIdentityServer(options =>
+var identityServerBuilder = builder.Services.AddIdentityServer(options =>
 {
     //options.IssuerUri = "null";
     options.Authentication.CookieLifetime = TimeSpan.FromHours(4);
@@ -25,22 +25,74 @@ builder.Services.AddIdentityServer(options =>
     options.Events.RaiseFailureEvents = true;
     options.Events.RaiseSuccessEvents = true;
 
-    // TODO: Remove this line in production.
-    options.KeyManagement.Enabled = false;
+    // Only disable key management in Development
+    // In production, you should enable key management and store keys securely
+    options.KeyManagement.Enabled = builder.Environment.IsProduction();
 })
 .AddInMemoryIdentityResources(Config.GetResources())
 .AddInMemoryApiScopes(Config.GetApiScopes())
 .AddInMemoryApiResources(Config.GetApis())
 .AddInMemoryClients(Config.GetClients(builder.Configuration))
-.AddAspNetIdentity<ApplicationUser>()
-// TODO: Not recommended for production - you need to store your key material somewhere secure
-.AddDeveloperSigningCredential();
+.AddAspNetIdentity<ApplicationUser>();
+
+// Configure signing credentials based on environment
+if (builder.Environment.IsDevelopment())
+{
+    // Use developer signing credential in Development
+    identityServerBuilder.AddDeveloperSigningCredential();
+}
+else
+{
+    // Production: Use certificate from configuration or environment variable
+    var certificatePath = builder.Configuration["IdentityServer:Certificate:Path"];
+    var certificatePassword = builder.Configuration["IdentityServer:Certificate:Password"];
+    
+    if (!string.IsNullOrEmpty(certificatePath) && File.Exists(certificatePath))
+    {
+        // Load certificate from file
+        var certificate = new X509Certificate2(certificatePath, certificatePassword);
+        identityServerBuilder.AddSigningCredential(certificate);
+    }
+    else
+    {
+        // Fallback: Try to load from environment variable (for containerized deployments)
+        var certBase64 = Environment.GetEnvironmentVariable("IDENTITY_SERVER_CERTIFICATE_BASE64");
+        var certPassword = Environment.GetEnvironmentVariable("IDENTITY_SERVER_CERTIFICATE_PASSWORD");
+        
+        if (!string.IsNullOrEmpty(certBase64))
+        {
+            var certBytes = Convert.FromBase64String(certBase64);
+            var certificate = new X509Certificate2(certBytes, certPassword);
+            identityServerBuilder.AddSigningCredential(certificate);
+        }
+        else
+        {
+            // Last resort: Use developer credential (NOT RECOMMENDED FOR PRODUCTION)
+            // TODO: Replace with proper certificate management
+            // Logging will be done after app is built
+            identityServerBuilder.AddDeveloperSigningCredential();
+        }
+    }
+}
 
 builder.Services.AddTransient<IProfileService, ProfileService>();
 builder.Services.AddTransient<ILoginService<ApplicationUser>, EFLoginService>();
 builder.Services.AddTransient<IRedirectService, RedirectService>();
 
 var app = builder.Build();
+
+// Log warning if using developer credential in production
+if (app.Environment.IsProduction())
+{
+    var logger = app.Services.GetRequiredService<ILogger<Program>>();
+    var certificatePath = app.Configuration["IdentityServer:Certificate:Path"];
+    var certBase64 = Environment.GetEnvironmentVariable("IDENTITY_SERVER_CERTIFICATE_BASE64");
+    
+    if (string.IsNullOrEmpty(certificatePath) && string.IsNullOrEmpty(certBase64))
+    {
+        logger.LogWarning("WARNING: Using developer signing credential in Production. This should be replaced with a proper certificate.");
+    }
+}
 
 app.MapDefaultEndpoints();
 

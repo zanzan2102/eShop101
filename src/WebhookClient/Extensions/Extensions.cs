@@ -50,12 +50,13 @@ public static class Extensions
             options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             options.Authority = identityUrl.ToString();
             options.SignedOutRedirectUri = callBackUrl.ToString();
-            options.ClientId = "webhooksclient";
-            options.ClientSecret = "secret";
+            options.ClientId = configuration.GetValue<string>("Identity:ClientId") ?? "webhooksclient";
+            options.ClientSecret = configuration.GetValue<string>("Identity:ClientSecret") ?? "secret";
             options.ResponseType = "code";
             options.SaveTokens = true;
             options.GetClaimsFromUserInfoEndpoint = true;
-            options.RequireHttpsMetadata = false;
+            // Only disable HTTPS metadata validation in Development
+            options.RequireHttpsMetadata = !builder.Environment.IsDevelopment();
             options.Scope.Add("openid");
             options.Scope.Add("webhooks");
         });

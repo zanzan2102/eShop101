@@ -20,9 +20,10 @@ var webhooksDb = postgres.AddDatabase("webhooksdb");
 var launchProfileName = ShouldUseHttpForEndpoints() ? "http" : "https";
 
 // Services
+// NOTE: Commented out .WithReference(identityDb) to use external database from appsettings.Development.json
 var identityApi = builder.AddProject<Projects.Identity_API>("identity-api", launchProfileName)
-    .WithExternalHttpEndpoints()
-    .WithReference(identityDb);
+    .WithExternalHttpEndpoints();
+    // .WithReference(identityDb); // Using external Neon.tech database instead
 
 var identityEndpoint = identityApi.GetEndpoint(launchProfileName);
 
@@ -32,27 +33,31 @@ var basketApi = builder.AddProject<Projects.Basket_API>("basket-api")
     .WithEnvironment("Identity__Url", identityEndpoint);
 redis.WithParentRelationship(basketApi);
 
+// NOTE: Commented out .WithReference(catalogDb) to use external database from appsettings.Development.json
 var catalogApi = builder.AddProject<Projects.Catalog_API>("catalog-api")
-    .WithReference(rabbitMq).WaitFor(rabbitMq)
-    .WithReference(catalogDb);
+    .WithReference(rabbitMq).WaitFor(rabbitMq);
+    // .WithReference(catalogDb); // Using external Neon.tech database instead
 
+// NOTE: Commented out .WithReference(orderDb) to use external database from appsettings.Development.json
 var orderingApi = builder.AddProject<Projects.Ordering_API>("ordering-api")
     .WithReference(rabbitMq).WaitFor(rabbitMq)
-    .WithReference(orderDb).WaitFor(orderDb)
+    // .WithReference(orderDb).WaitFor(orderDb) // Using external Neon.tech database instead
     .WithHttpHealthCheck("/health")
     .WithEnvironment("Identity__Url", identityEndpoint);
 
+// NOTE: Commented out .WithReference(orderDb) to use external database from appsettings.Development.json
 builder.AddProject<Projects.OrderProcessor>("order-processor")
     .WithReference(rabbitMq).WaitFor(rabbitMq)
-    .WithReference(orderDb)
+    // .WithReference(orderDb) // Using external Neon.tech database instead
     .WaitFor(orderingApi); // wait for the orderingApi to be ready because that contains the EF migrations
 
 builder.AddProject<Projects.PaymentProcessor>("payment-processor")
     .WithReference(rabbitMq).WaitFor(rabbitMq);
 
+// NOTE: Commented out .WithReference(webhooksDb) to use external database from appsettings.Development.json
 var webHooksApi = builder.AddProject<Projects.Webhooks_API>("webhooks-api")
     .WithReference(rabbitMq).WaitFor(rabbitMq)
-    .WithReference(webhooksDb)
+    // .WithReference(webhooksDb) // Using external Neon.tech database instead
     .WithEnvironment("Identity__Url", identityEndpoint);
 
 // Reverse proxies

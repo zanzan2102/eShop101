@@ -36,7 +36,8 @@ public static class AuthenticationExtensions
             var audience = identitySection.GetRequiredValue("Audience");
 
             options.Authority = identityUrl;
-            options.RequireHttpsMetadata = false;
+            // Only disable HTTPS metadata validation in Development
+            options.RequireHttpsMetadata = !builder.Environment.IsDevelopment();
             options.Audience = audience;
             
 #if DEBUG
