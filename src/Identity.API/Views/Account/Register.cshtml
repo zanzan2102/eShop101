@@ -1,6 +1,12 @@
 @model RegisterViewModel
 
 <div class="register-page">
+    <div class="register-background">
+        <div class="bg-gradient-1"></div>
+        <div class="bg-gradient-2"></div>
+        <div class="bg-gradient-3"></div>
+    </div>
+    
     <div class="register-container">
         <div class="register-wrapper">
             <form asp-route="Register" class="register-form">
@@ -17,13 +23,14 @@
                     <!-- Header -->
                     <div class="register-header">
                         <div class="register-icon-wrapper">
+                            <div class="icon-glow"></div>
                             <svg class="register-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                 <path d="M20.59 22C20.59 18.13 16.74 15 12 15C7.26 15 3.41 18.13 3.41 22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
                         </div>
-                        <h1 class="register-title">Create Account</h1>
-                        <p class="register-subtitle">Join AdventureWorks and start your shopping journey</p>
+                        <h1 class="register-title">Create Your Account</h1>
+                        <p class="register-subtitle">Join eShop and start your amazing shopping journey today</p>
                     </div>
 
                     <partial name="_ValidationSummary" />
@@ -107,30 +114,23 @@
                         </div>
                     </div>
 
-                    <!-- Hidden fields -->
-                    <input type="hidden" asp-for="LastName" value="" />
-                    <input type="hidden" asp-for="Street" value="" />
-                    <input type="hidden" asp-for="City" value="" />
-                    <input type="hidden" asp-for="State" value="" />
-                    <input type="hidden" asp-for="Country" value="" />
-                    <input type="hidden" asp-for="ZipCode" value="" />
-                    <input type="hidden" asp-for="CardHolderName" value="" />
-                    <input type="hidden" asp-for="CardNumber" value="" />
-                    <input type="hidden" asp-for="SecurityNumber" value="" />
-                    <input type="hidden" asp-for="Expiration" value="" />
-                    <input type="hidden" asp-for="CardType" value="1" />
-
                     <!-- Action Buttons -->
                     <div class="register-actions">
                         <button type="submit" class="btn-register-primary" name="button" value="register">
-                            <span>Create Account</span>
+                            <span class="btn-text">Create Account</span>
                             <svg class="btn-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
+                            <div class="btn-shine"></div>
                         </button>
                         <button type="submit" class="btn-register-secondary" name="button" value="cancel">
                             <span>Cancel</span>
                         </button>
+                    </div>
+
+                    <!-- Divider -->
+                    <div class="register-divider">
+                        <span>or</span>
                     </div>
 
                     <!-- Footer -->
