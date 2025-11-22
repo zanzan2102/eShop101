@@ -59,7 +59,7 @@ public static class Extensions
 
         var identityUrl = configuration.GetRequiredValue("IdentityUrl");
         var callBackUrl = configuration.GetRequiredValue("CallBackUrl");
-        var sessionCookieLifetime = configuration.GetValue("SessionCookieLifetimeMinutes", 60);
+        var sessionCookieLifetime = configuration.GetValue("SessionCookieLifetimeMinutes", 120);
 
         // Add Authentication services
         services.AddAuthorization();
