@@ -7,7 +7,13 @@
         builder.AddRabbitMqEventBus("eventbus")
                .AddEventBusSubscriptions();
 
-        builder.AddNpgsqlDbContext<WebhooksContext>("webhooksdb");
+        // NOTE: Changed from AddNpgsqlDbContext (Aspire extension) to direct UseNpgsql
+        // to use external Neon.tech database connection string from appsettings.Development.json
+        builder.Services.AddDbContext<WebhooksContext>(options =>
+        {
+            options.UseNpgsql(builder.Configuration.GetConnectionString("webhooksdb"));
+        });
+        builder.EnrichNpgsqlDbContext<WebhooksContext>();
 
         builder.Services.AddMigration<WebhooksContext>();
 

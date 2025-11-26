@@ -11,6 +11,12 @@ namespace Ordering.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            // Ensure Neon database is clean before creating ordering schema/objects.
+            // Older runs left sequences/tables behind (e.g., ordering.buyerseq),
+            // so we drop the schema and any public sequences that conflict.
+            migrationBuilder.Sql("DROP SCHEMA IF EXISTS ordering CASCADE;");
+            migrationBuilder.Sql("DROP SEQUENCE IF EXISTS public.orderitemseq CASCADE;");
+
             migrationBuilder.EnsureSchema(
                 name: "ordering");
 

@@ -6,7 +6,13 @@ builder.AddServiceDefaults();
 
 builder.Services.AddControllersWithViews();
 
-builder.AddNpgsqlDbContext<ApplicationDbContext>("identitydb");
+// NOTE: Changed from AddNpgsqlDbContext (Aspire extension) to direct UseNpgsql
+// to use external Neon.tech database connection string from appsettings.Development.json
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+{
+    options.UseNpgsql(builder.Configuration.GetConnectionString("identitydb"));
+});
+builder.EnrichNpgsqlDbContext<ApplicationDbContext>();
 
 // Apply database migration automatically. Note that this approach is not
 // recommended for production scenarios. Consider generating SQL scripts from

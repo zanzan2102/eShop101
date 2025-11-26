@@ -7,20 +7,23 @@ builder.AddForwardedHeaders();
 var redis = builder.AddRedis("redis");
 var rabbitMq = builder.AddRabbitMQ("eventbus")
     .WithLifetime(ContainerLifetime.Persistent);
-var postgres = builder.AddPostgres("postgres")
-    .WithImage("ankane/pgvector")
-    .WithImageTag("latest")
-    .WithLifetime(ContainerLifetime.Persistent);
 
-var catalogDb = postgres.AddDatabase("catalogdb");
-var identityDb = postgres.AddDatabase("identitydb");
-var orderDb = postgres.AddDatabase("orderingdb");
-var webhooksDb = postgres.AddDatabase("webhooksdb");
+// NOTE: Postgres container setup commented out - using external Neon.tech database instead
+// All services now use connection strings from appsettings.Development.json pointing to Neon.tech
+// var postgres = builder.AddPostgres("postgres")
+//     .WithImage("ankane/pgvector")
+//     .WithImageTag("latest")
+//     .WithLifetime(ContainerLifetime.Persistent);
+//
+// var catalogDb = postgres.AddDatabase("catalogdb");
+// var identityDb = postgres.AddDatabase("identitydb");
+// var orderDb = postgres.AddDatabase("orderingdb");
+// var webhooksDb = postgres.AddDatabase("webhooksdb");
 
 var launchProfileName = ShouldUseHttpForEndpoints() ? "http" : "https";
 
 // Services
-// NOTE: Commented out .WithReference(identityDb) to use external database from appsettings.Development.json
+// NOTE: All database references commented out - using external Neon.tech database from appsettings.Development.json
 var identityApi = builder.AddProject<Projects.Identity_API>("identity-api", launchProfileName)
     .WithExternalHttpEndpoints();
     // .WithReference(identityDb); // Using external Neon.tech database instead
@@ -33,19 +36,19 @@ var basketApi = builder.AddProject<Projects.Basket_API>("basket-api")
     .WithEnvironment("Identity__Url", identityEndpoint);
 redis.WithParentRelationship(basketApi);
 
-// NOTE: Commented out .WithReference(catalogDb) to use external database from appsettings.Development.json
+// NOTE: Database reference commented out - using external Neon.tech database from appsettings.Development.json
 var catalogApi = builder.AddProject<Projects.Catalog_API>("catalog-api")
     .WithReference(rabbitMq).WaitFor(rabbitMq);
     // .WithReference(catalogDb); // Using external Neon.tech database instead
 
-// NOTE: Commented out .WithReference(orderDb) to use external database from appsettings.Development.json
+// NOTE: Database reference commented out - using external Neon.tech database from appsettings.Development.json
 var orderingApi = builder.AddProject<Projects.Ordering_API>("ordering-api")
     .WithReference(rabbitMq).WaitFor(rabbitMq)
     // .WithReference(orderDb).WaitFor(orderDb) // Using external Neon.tech database instead
     .WithHttpHealthCheck("/health")
     .WithEnvironment("Identity__Url", identityEndpoint);
 
-// NOTE: Commented out .WithReference(orderDb) to use external database from appsettings.Development.json
+// NOTE: Database reference commented out - using external Neon.tech database from appsettings.Development.json
 builder.AddProject<Projects.OrderProcessor>("order-processor")
     .WithReference(rabbitMq).WaitFor(rabbitMq)
     // .WithReference(orderDb) // Using external Neon.tech database instead
@@ -54,7 +57,7 @@ builder.AddProject<Projects.OrderProcessor>("order-processor")
 builder.AddProject<Projects.PaymentProcessor>("payment-processor")
     .WithReference(rabbitMq).WaitFor(rabbitMq);
 
-// NOTE: Commented out .WithReference(webhooksDb) to use external database from appsettings.Development.json
+// NOTE: Database reference commented out - using external Neon.tech database from appsettings.Development.json
 var webHooksApi = builder.AddProject<Projects.Webhooks_API>("webhooks-api")
     .WithReference(rabbitMq).WaitFor(rabbitMq)
     // .WithReference(webhooksDb) // Using external Neon.tech database instead

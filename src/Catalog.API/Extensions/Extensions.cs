@@ -12,13 +12,16 @@ public static class Extensions
             return;
         }
 
-        builder.AddNpgsqlDbContext<CatalogContext>("catalogdb", configureDbContextOptions: dbContextOptionsBuilder =>
+        // NOTE: Changed from AddNpgsqlDbContext (Aspire extension) to direct UseNpgsql
+        // to use external Neon.tech database connection string from appsettings.Development.json
+        builder.Services.AddDbContext<CatalogContext>(options =>
         {
-            dbContextOptionsBuilder.UseNpgsql(builder =>
+            options.UseNpgsql(builder.Configuration.GetConnectionString("catalogdb"), npgsqlOptions =>
             {
-                builder.UseVector();
+                npgsqlOptions.UseVector();
             });
         });
+        builder.EnrichNpgsqlDbContext<CatalogContext>();
 
         // Enable seeding if UseCustomizationData is true in configuration
         // Set CatalogOptions:UseCustomizationData to true to enable seeding
